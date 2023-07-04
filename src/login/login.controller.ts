@@ -23,4 +23,16 @@ export class LoginController {
     const result = this.loginService.signUp(signUp.email, signUp.password);
     return result;
   }
+
+  @Get('/getUserData')
+  getUserData() {
+    const result = this.loginService.getUserData();
+    return result;
+  }
+
+  @Post('/logout')
+  logout() {
+    const result = this.loginService.logout();
+    return result;
+  }
 }
