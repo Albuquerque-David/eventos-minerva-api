@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
@@ -16,9 +17,9 @@ const firebaseConfig = {
 };
 
 export function initializeFirebase() {
-    console.log(firebaseConfig)
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 }
 
 
