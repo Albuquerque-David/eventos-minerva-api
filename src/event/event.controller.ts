@@ -36,7 +36,7 @@ export class EventController {
     return result;
   }
 
-  @Get('/event/downloadImage')
+  @Post('/event/downloadImage')
   async downloadImage(
     @common.Body() body: EventGetDownloadInput,
     @Res() res: Response,
