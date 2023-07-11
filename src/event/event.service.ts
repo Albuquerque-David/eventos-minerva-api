@@ -1,6 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore"; 
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+} from 'firebase/firestore';
 import { UUID, randomUUID } from 'crypto';
 import { EventModel } from './model/Event';
 
@@ -8,33 +16,42 @@ import { EventModel } from './model/Event';
 export class EventService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
-  async createEvent(name: string,
+  async createEvent(
+    name: string,
     local: string,
     date: Date,
     category: string,
-    image: Blob,
+    image: Express.Multer.File,
     scheduleName: string,
     scheduleHour: Date,
     scheduleDescription: string,
-    ) {
-        const db = getFirestore();
-        const uid = randomUUID();
-        const event = await setDoc(doc(db, "events", uid), {
-            name: name,
-            local: local,
-            date: date,
-            category: category,
-            image: image,
-            schedule: [{scheduleName: scheduleName,
-                scheduleHour: scheduleHour,
-                scheduleDescription: scheduleDescription}]
-        });
-        return event;
+  ) {
+    const db = getFirestore();
+    const uid = randomUUID();
+    await this.firebaseService.uploadFile(
+      image,
+      `${uid}-${image.originalname}`,
+    );
+    const event = await setDoc(doc(db, 'events', uid), {
+      name: name,
+      local: local,
+      date: date,
+      category: category,
+      image: `${uid}-${image.originalname}`,
+      schedule: [
+        {
+          scheduleName: scheduleName,
+          scheduleHour: scheduleHour,
+          scheduleDescription: scheduleDescription,
+        },
+      ],
+    });
+    return event;
   }
 
   async getEvent() {
     const db = getFirestore();
-    const q = query(collection(db, "events"));
+    const q = query(collection(db, 'events'));
 
     const querySnapshot = await getDocs(q);
     const data: any[] = [];
