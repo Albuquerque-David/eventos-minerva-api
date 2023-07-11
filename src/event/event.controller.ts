@@ -25,6 +25,7 @@ export class EventController {
   ) {
     const result = this.eventService.createEvent(
       event.name,
+      event.description,
       event.local,
       event.date,
       event.category,

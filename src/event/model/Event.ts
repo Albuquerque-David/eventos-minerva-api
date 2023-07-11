@@ -1,5 +1,6 @@
 class EventModel {
   name: string;
+  description: string;
   local: string;
   date: Date;
   category: string;

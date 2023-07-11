@@ -18,6 +18,7 @@ export class EventService {
 
   async createEvent(
     name: string,
+    description: string,
     local: string,
     date: Date,
     category: string,
@@ -33,7 +34,9 @@ export class EventService {
       `${uid}-${image.originalname}`,
     );
     const event = await setDoc(doc(db, 'events', uid), {
+      id: uid,
       name: name,
+      description: description,
       local: local,
       date: date,
       category: category,
