@@ -20,7 +20,7 @@ export class EventController {
 
   @Get('/events')
   getAll() {
-    const result = this.eventService.getEvent();
+    const result = this.eventService.getAllEvents();
     return result;
   }
 }
