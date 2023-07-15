@@ -52,6 +52,19 @@ export class EventService {
     return event;
   }
 
+  async getAllEvents() {
+    const db = getFirestore();
+    const q = query(collection(db, "events"));
+
+    const querySnapshot = await getDocs(q);
+    const data: any[] = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+
+    return data;
+  }
+
   async getEvent() {
     const db = getFirestore();
     const q = query(collection(db, 'events'));
