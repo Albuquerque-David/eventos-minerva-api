@@ -1,4 +1,6 @@
 class EventModel {
+  id: string;
+  image: string;
   name: string;
   description: string;
   local: string;

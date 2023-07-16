@@ -8,6 +8,7 @@ import {
   getFirestore,
   query,
   setDoc,
+  where,
 } from 'firebase/firestore';
 import { UUID, randomUUID } from 'crypto';
 import { EventModel } from './model/Event';
@@ -57,14 +58,15 @@ export class EventService {
     return data;
   }
 
-  async getEvent() {
+  async getEvent(id: string) {
     const db = getFirestore();
-    const q = query(collection(db, 'events'));
+    const eventsRef = collection(db, "events");
+    const q = query(eventsRef, where("id", "==", id));
 
     const querySnapshot = await getDocs(q);
-    const data: any[] = [];
+    let data: any;
     querySnapshot.forEach((doc) => {
-      data.push(doc.data());
+      data = doc.data();
     });
 
     return data;
