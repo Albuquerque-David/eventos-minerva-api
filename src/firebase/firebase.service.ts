@@ -80,8 +80,11 @@ export class FirebaseService {
   async uploadFile(file: Express.Multer.File, filename: string) {
     const storage = getStorage();
     const storageRef = ref(storage, filename);
+    const metadata = {
+      contentType: 'image/jpg',
+    };
 
-    await uploadBytes(storageRef, file.buffer).then((snapshot) => {
+    await uploadBytes(storageRef, file.buffer, metadata).then((snapshot) => {
       console.log('Uploaded a blob or file!');
     });
   }
