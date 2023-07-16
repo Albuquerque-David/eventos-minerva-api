@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, Post, Res } from '@nestjs/common';
+import { Controller, Get, HttpException, Param, Post, Res } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { EventService } from './event.service';
 import * as common from '@nestjs/common';
@@ -62,6 +62,12 @@ export class EventController {
   @Get('/events')
   getAll() {
     const result = this.eventService.getAllEvents();
+    return result;
+  }
+
+  @Get('/event/:id')
+  getById(@Param('id') id: string) {
+    const result = this.eventService.getEvent(id);
     return result;
   }
 }
