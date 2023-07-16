@@ -47,13 +47,15 @@ export class FirebaseService {
     }
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<any> {
     const auth = getAuth();
 
-    await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        return user;
+    return await signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        return await userCredential.user.getIdToken().then((token) => {
+          const email = userCredential.user.email;
+          return token;
+        });
       })
       .catch((error) => {
         throw new HttpException(
@@ -78,8 +80,11 @@ export class FirebaseService {
   async uploadFile(file: Express.Multer.File, filename: string) {
     const storage = getStorage();
     const storageRef = ref(storage, filename);
+    const metadata = {
+      contentType: 'image/jpg',
+    };
 
-    await uploadBytes(storageRef, file.buffer).then((snapshot) => {
+    await uploadBytes(storageRef, file.buffer, metadata).then((snapshot) => {
       console.log('Uploaded a blob or file!');
     });
   }

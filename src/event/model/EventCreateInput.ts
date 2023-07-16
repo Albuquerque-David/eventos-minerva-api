@@ -1,11 +1,8 @@
-class EventModel {
-  id: string;
-  image: string;
+class EventCreateInput {
   name: string;
   description: string;
   local: string;
   date: Date;
-  image: string;
   category: string;
   schedule: [
     {
@@ -16,4 +13,4 @@ class EventModel {
   ];
 }
 
-export { EventModel };
+export { EventCreateInput };

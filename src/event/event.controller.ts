@@ -2,13 +2,12 @@ import { Controller, Get, HttpException, Param, Post, Res } from '@nestjs/common
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { EventService } from './event.service';
 import * as common from '@nestjs/common';
-import { EventModel } from './model/Event';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createReadStream, createWriteStream } from 'fs';
-import { join } from 'path';
 import { EventGetDownloadInput } from './model/EventGetDownloadInput';
 import axios from 'axios';
+import { EventCreateInput } from './model/EventCreateInput';
+import { EventGetImageResponse } from './model/EventGetImageResponse';
 
 @Controller()
 export class EventController {
@@ -20,7 +19,7 @@ export class EventController {
   @common.UseInterceptors(FileInterceptor('image'))
   @Post('/event')
   create(
-    @common.Body() event: EventModel,
+    @common.Body() event: EventCreateInput,
     @common.UploadedFile() image: Express.Multer.File,
   ) {
     const result = this.eventService.createEvent(
@@ -30,11 +29,19 @@ export class EventController {
       event.date,
       event.category,
       image,
-      event.schedule[0].name,
-      event.schedule[0].hour,
-      event.schedule[0].description,
+      event.schedule,
     );
     return result;
+  }
+
+  @Post('/event/image')
+  async getImageURL(
+    @common.Body() body: EventGetDownloadInput,
+  ): Promise<EventGetImageResponse> {
+    const imageUrl = await this.firebaseService.downloadFile(body.imageName);
+    const response = new EventGetImageResponse();
+    response.imageURL = imageUrl;
+    return response;
   }
 
   @Post('/event/downloadImage')
@@ -43,6 +50,7 @@ export class EventController {
     @Res() res: Response,
   ) {
     const imageUrl = await this.firebaseService.downloadFile(body.imageName);
+    console.log(imageUrl);
     try {
       const response = await axios.get(imageUrl, { responseType: 'stream' });
 
