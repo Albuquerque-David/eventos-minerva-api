@@ -6,8 +6,8 @@ export class LoginService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
   async login(email: string, password: string) {
-    const user = await this.firebaseService.login(email, password);
-    return user;
+    const token = await this.firebaseService.login(email, password);
+    return token;
   }
 
   async signUp(email: string, password: string) {

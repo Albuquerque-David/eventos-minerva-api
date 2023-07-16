@@ -1,14 +1,12 @@
-import { Controller, Get, HttpException, Post, Res } from '@nestjs/common';
+import { Controller, Get, Post, Res } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { EventService } from './event.service';
 import * as common from '@nestjs/common';
-import { EventModel } from './model/Event';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createReadStream, createWriteStream } from 'fs';
-import { join } from 'path';
 import { EventGetDownloadInput } from './model/EventGetDownloadInput';
 import axios from 'axios';
+import { EventCreateInput } from './model/EventCreateInput';
 
 @Controller()
 export class EventController {
@@ -20,7 +18,7 @@ export class EventController {
   @common.UseInterceptors(FileInterceptor('image'))
   @Post('/event')
   create(
-    @common.Body() event: EventModel,
+    @common.Body() event: EventCreateInput,
     @common.UploadedFile() image: Express.Multer.File,
   ) {
     const result = this.eventService.createEvent(
@@ -30,9 +28,7 @@ export class EventController {
       event.date,
       event.category,
       image,
-      event.schedule[0].name,
-      event.schedule[0].hour,
-      event.schedule[0].description,
+      event.schedule,
     );
     return result;
   }

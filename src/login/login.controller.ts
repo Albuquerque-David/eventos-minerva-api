@@ -4,35 +4,39 @@ import { LoginService } from './login.service';
 import * as common from '@nestjs/common';
 import { LoginInput } from './model/LoginInput';
 import { SignUpInput } from './model/SignUpInput';
+import { LoginResponse } from './model/LoginResponse';
 
 @Controller()
 export class LoginController {
-  constructor(
-    private readonly loginService: LoginService,
-    private readonly firebaseService: FirebaseService,
-  ) {}
+  constructor(private readonly loginService: LoginService) {}
 
   @Post('/login')
-  login(@common.Body() login: LoginInput) {
-    const result = this.loginService.login(login.email, login.password);
-    return result;
+  async login(@common.Body() login: LoginInput): Promise<LoginResponse> {
+    const token = await this.loginService.login(login.email, login.password);
+    const response = new LoginResponse();
+    response.email = login.email;
+    response.token = token;
+    return response;
   }
 
   @Post('/signup')
-  signUp(@common.Body() signUp: SignUpInput) {
-    const result = this.loginService.signUp(signUp.email, signUp.password);
+  async signUp(@common.Body() signUp: SignUpInput) {
+    const result = await this.loginService.signUp(
+      signUp.email,
+      signUp.password,
+    );
     return result;
   }
 
   @Get('/getUserData')
-  getUserData() {
-    const result = this.loginService.getUserData();
+  async getUserData() {
+    const result = await this.loginService.getUserData();
     return result;
   }
 
   @Post('/logout')
-  logout() {
-    const result = this.loginService.logout();
+  async logout() {
+    const result = await this.loginService.logout();
     return result;
   }
 }

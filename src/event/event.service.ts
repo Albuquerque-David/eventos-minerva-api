@@ -23,9 +23,7 @@ export class EventService {
     date: Date,
     category: string,
     image: Express.Multer.File,
-    scheduleName: string,
-    scheduleHour: Date,
-    scheduleDescription: string,
+    schedule: Array<any>,
   ) {
     const db = getFirestore();
     const uid = randomUUID();
@@ -41,20 +39,14 @@ export class EventService {
       date: date,
       category: category,
       image: `${uid}-${image.originalname}`,
-      schedule: [
-        {
-          scheduleName: scheduleName,
-          scheduleHour: scheduleHour,
-          scheduleDescription: scheduleDescription,
-        },
-      ],
+      schedule: schedule,
     });
     return event;
   }
 
   async getAllEvents() {
     const db = getFirestore();
-    const q = query(collection(db, "events"));
+    const q = query(collection(db, 'events'));
 
     const querySnapshot = await getDocs(q);
     const data: any[] = [];
