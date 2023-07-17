@@ -5,7 +5,6 @@ class EventModel {
   description: string;
   local: string;
   date: Date;
-  image: string;
   category: string;
   schedule: [
     {
