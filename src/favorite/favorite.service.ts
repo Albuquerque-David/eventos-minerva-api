@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   getFirestore,
@@ -35,6 +36,29 @@ export class FavoriteService {
     } catch (error) {
       console.log(error)
       return { status: 403, message: "You have to login" } ;
+    }
+  }
+
+  async unfavorite(
+    idEvent: string
+  ) {
+    const db = getFirestore();
+    const favoritesRef = collection(db, "favorites");
+    const q = query(favoritesRef, where("idEvent", "==", idEvent));
+    const querySnapshot = await getDocs(q);
+    
+    let data: any;
+    console.log("query", querySnapshot);
+    querySnapshot.forEach((doc) => {
+      data = doc.ref.id;
+    });
+    console.log('data', data);
+    try {
+      await deleteDoc(doc(db, "favorites", data));
+      return { status: 200 };
+    } catch (error) {
+      console.log(error)
+      return error;
     }
   }
 }
