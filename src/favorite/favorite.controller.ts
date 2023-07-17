@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, Param, Post, Res } from '@nestjs/common';
+import { Controller, Delete, Get, HttpException, Param, Post, Res } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { FavoriteService } from './favorite.service';
 import { FavoriteEventModel } from './model/FavoriteEvent';
@@ -16,6 +16,14 @@ export class FavoriteController {
     @common.Body() favorite: FavoriteEventModel,
   ) {
     const result = this.favoriteService.favorite(favorite.idEvent);
+    return result;
+  }
+
+  @Delete('/unfavorite')
+  delete(
+    @common.Body() favorite: FavoriteEventModel,
+  ) {
+    const result = this.favoriteService.unfavorite(favorite.idEvent);
     return result;
   }
 }
