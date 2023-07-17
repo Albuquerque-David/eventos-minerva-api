@@ -13,11 +13,15 @@ import {
 import { randomUUID } from 'crypto';
 import { FavoriteModel } from './model/Favorite';
 import { LoginService } from 'src/login/login.service';
+import { EventModel } from 'src/event/model/Event';
 
 @Injectable()
 export class FavoriteService {
   constructor(private readonly firebaseService: FirebaseService, 
-    private readonly loginService: LoginService) {}
+    private readonly loginService: LoginService) {
+    }
+
+  favoritesByUser: any = [];
 
   async favorite(
     idEvent: string
@@ -84,11 +88,28 @@ export class FavoriteService {
         data.push(doc.data());
       });
   
+      this.favoritesByUser = data;
+
       return data;
     } catch (error) {
       console.log(error);
 
       return error;
     }
+  }
+
+  async check(idEvent: string) {
+    if (this.favoritesByUser.length == 0){
+      this.favoritesByUser = await this.getFavorites();
+    }
+
+    let flag: boolean = false;
+    this.favoritesByUser.forEach((element: EventModel) => {
+      if (element.id == idEvent) 
+        flag = true;  
+      
+    });
+    
+    return flag
   }
 }

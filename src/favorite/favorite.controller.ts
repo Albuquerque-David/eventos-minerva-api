@@ -32,4 +32,10 @@ export class FavoriteController {
     const result = this.favoriteService.getFavorites();
     return result;
   }
+
+  @Get('/checkfavorite/:idEvent')
+  check(@Param('idEvent') idEvent: string) {
+    const result = this.favoriteService.check(idEvent);
+    return result;
+  }
 }
