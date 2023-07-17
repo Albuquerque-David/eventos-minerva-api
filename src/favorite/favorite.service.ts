@@ -98,7 +98,11 @@ export class FavoriteService {
     }
   }
 
-  check(idEvent: string) {
+  async check(idEvent: string) {
+    if (this.favoritesByUser.length == 0){
+      this.favoritesByUser = await this.getFavorites();
+    }
+
     let flag: boolean = false;
     this.favoritesByUser.forEach((element: EventModel) => {
       if (element.id == idEvent) 
