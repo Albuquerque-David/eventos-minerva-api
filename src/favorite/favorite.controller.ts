@@ -26,4 +26,10 @@ export class FavoriteController {
     const result = this.favoriteService.unfavorite(favorite.idEvent);
     return result;
   }
+
+  @Get('/favorites')
+  get() {
+    const result = this.favoriteService.getFavorites();
+    return result;
+  }
 }

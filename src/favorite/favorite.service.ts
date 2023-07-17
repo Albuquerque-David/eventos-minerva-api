@@ -48,16 +48,46 @@ export class FavoriteService {
     const querySnapshot = await getDocs(q);
     
     let data: any;
-    console.log("query", querySnapshot);
     querySnapshot.forEach((doc) => {
       data = doc.ref.id;
     });
-    console.log('data', data);
+
     try {
       await deleteDoc(doc(db, "favorites", data));
+
       return { status: 200 };
     } catch (error) {
-      console.log(error)
+      console.log(error);
+
+      return error;
+    }
+  }
+
+  async getFavorites() {
+    const db = getFirestore();
+    const eventsRef = collection(db, "favorites");
+
+    try {
+      const email = await this.loginService.getUserData();
+      const q = query(eventsRef, where("emailUser", "==", email));
+      const querySnapshot = await getDocs(q);
+      const ids: any[] = [];
+      querySnapshot.forEach((doc) => {
+        ids.push(doc.data().idEvent);
+      });
+
+      const allEvents = query(collection(db, 'events'));
+      const allEventsByUser = query(allEvents, where("id", "in", ids));
+      const querySnapshotEvents = await getDocs(allEventsByUser);
+      const data: any[] = [];
+      querySnapshotEvents.forEach((doc) => {
+        data.push(doc.data());
+      });
+  
+      return data;
+    } catch (error) {
+      console.log(error);
+
       return error;
     }
   }
