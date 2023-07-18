@@ -100,9 +100,7 @@ export class FavoriteService {
   }
 
   async check(idEvent: string, token: string) {
-    if (this.favoritesByUser.length == 0) {
-      this.favoritesByUser = await this.getFavorites(token);
-    }
+    this.favoritesByUser = await this.getFavorites(token);
 
     let flag = false;
 
