@@ -1,10 +1,10 @@
-import { Controller, Get, HttpException, Post } from '@nestjs/common';
-import { FirebaseService } from 'src/firebase/firebase.service';
+import { Controller, Get, Post, Req } from '@nestjs/common';
 import { LoginService } from './login.service';
 import * as common from '@nestjs/common';
 import { LoginInput } from './model/LoginInput';
 import { SignUpInput } from './model/SignUpInput';
 import { LoginResponse } from './model/LoginResponse';
+import { Request } from 'express';
 
 @Controller()
 export class LoginController {
@@ -29,8 +29,9 @@ export class LoginController {
   }
 
   @Get('/getUserData')
-  async getUserData() {
-    const result = await this.loginService.getUserData();
+  async getUserData(@Req() request: Request) {
+    const token = this.extractToken(request);
+    const result = await this.loginService.getUserData(token);
     return result;
   }
 
@@ -38,5 +39,16 @@ export class LoginController {
   async logout() {
     const result = await this.loginService.logout();
     return result;
+  }
+
+  private extractToken(request: Request) {
+    const authorizationHeader = request.headers.authorization;
+    if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+      const token = authorizationHeader.substr(7);
+      // Agora você tem o valor completo do token Bearer
+      return token;
+    } else {
+      return '';
+    }
   }
 }

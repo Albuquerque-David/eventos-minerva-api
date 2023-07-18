@@ -17,47 +17,44 @@ import { EventModel } from 'src/event/model/Event';
 
 @Injectable()
 export class FavoriteService {
-  constructor(private readonly firebaseService: FirebaseService, 
-    private readonly loginService: LoginService) {
-    }
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly loginService: LoginService,
+  ) {}
 
   favoritesByUser: any = [];
 
-  async favorite(
-    idEvent: string
-  ) {
+  async favorite(idEvent: string, token: string) {
     const db = getFirestore();
     const uid = randomUUID();
 
     try {
-      const email = await this.loginService.getUserData();
+      const email = await this.loginService.getUserData(token);
       const favorited = await setDoc(doc(db, 'favorites', uid), {
         idEvent: idEvent,
         emailUser: email,
       });
-  
+
       return { status: 200, message: favorited };
     } catch (error) {
-      console.log(error)
-      return { status: 403, message: "You have to login" } ;
+      console.log(error);
+      return { status: 403, message: 'You have to login' };
     }
   }
 
-  async unfavorite(
-    idEvent: string
-  ) {
+  async unfavorite(idEvent: string) {
     const db = getFirestore();
-    const favoritesRef = collection(db, "favorites");
-    const q = query(favoritesRef, where("idEvent", "==", idEvent));
+    const favoritesRef = collection(db, 'favorites');
+    const q = query(favoritesRef, where('idEvent', '==', idEvent));
     const querySnapshot = await getDocs(q);
-    
+
     let data: any;
     querySnapshot.forEach((doc) => {
       data = doc.ref.id;
     });
 
     try {
-      await deleteDoc(doc(db, "favorites", data));
+      await deleteDoc(doc(db, 'favorites', data));
 
       return { status: 200 };
     } catch (error) {
@@ -67,27 +64,31 @@ export class FavoriteService {
     }
   }
 
-  async getFavorites() {
+  async getFavorites(token: string) {
     const db = getFirestore();
-    const eventsRef = collection(db, "favorites");
+    const eventsRef = collection(db, 'favorites');
 
     try {
-      const email = await this.loginService.getUserData();
-      const q = query(eventsRef, where("emailUser", "==", email));
+      const email = await this.loginService.getUserData(token);
+      const q = query(eventsRef, where('emailUser', '==', email));
       const querySnapshot = await getDocs(q);
       const ids: any[] = [];
       querySnapshot.forEach((doc) => {
         ids.push(doc.data().idEvent);
       });
 
+      if (ids.length === 0) {
+        return [];
+      }
+
       const allEvents = query(collection(db, 'events'));
-      const allEventsByUser = query(allEvents, where("id", "in", ids));
+      const allEventsByUser = query(allEvents, where('id', 'in', ids));
       const querySnapshotEvents = await getDocs(allEventsByUser);
       const data: any[] = [];
       querySnapshotEvents.forEach((doc) => {
         data.push(doc.data());
       });
-  
+
       this.favoritesByUser = data;
 
       return data;
@@ -98,18 +99,16 @@ export class FavoriteService {
     }
   }
 
-  async check(idEvent: string) {
-    if (this.favoritesByUser.length == 0){
-      this.favoritesByUser = await this.getFavorites();
+  async check(idEvent: string, token: string) {
+    if (this.favoritesByUser.length == 0) {
+      this.favoritesByUser = await this.getFavorites(token);
     }
 
-    let flag: boolean = false;
+    let flag = false;
     this.favoritesByUser.forEach((element: EventModel) => {
-      if (element.id == idEvent) 
-        flag = true;  
-      
+      if (element.id == idEvent) flag = true;
     });
-    
-    return flag
+
+    return flag;
   }
 }

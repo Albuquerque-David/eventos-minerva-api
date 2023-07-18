@@ -13,6 +13,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class FirebaseService {
@@ -30,15 +31,10 @@ export class FirebaseService {
       });
   }
 
-  async getUserData() {
-    const auth = getAuth();
-
+  async getUserData(token: string) {
     try {
-      if (auth.currentUser) {
-        return auth.currentUser?.email;
-      } else {
-        throw new HttpException('Não há usuário autenticado.', 401);
-      }
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      return decodedToken.email;
     } catch (error) {
       throw new HttpException(
         'Não foi recuperar dados de usuário. Necessário autenticar.',

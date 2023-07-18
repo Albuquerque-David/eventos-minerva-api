@@ -50,7 +50,6 @@ export class EventController {
     @Res() res: Response,
   ) {
     const imageUrl = await this.firebaseService.downloadFile(body.imageName);
-    console.log(imageUrl);
     try {
       const response = await axios.get(imageUrl, { responseType: 'stream' });
 

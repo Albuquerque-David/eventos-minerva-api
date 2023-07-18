@@ -15,8 +15,8 @@ export class LoginService {
     return user;
   }
 
-  async getUserData() {
-    const user = await this.firebaseService.getUserData();
+  async getUserData(token: string) {
+    const user = await this.firebaseService.getUserData(token);
     return user;
   }
 
