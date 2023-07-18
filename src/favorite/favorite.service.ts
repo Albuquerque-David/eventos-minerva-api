@@ -105,6 +105,11 @@ export class FavoriteService {
     }
 
     let flag = false;
+
+    if (this.favoritesByUser.length === 0) {
+      return false;
+    }
+
     this.favoritesByUser.forEach((element: EventModel) => {
       if (element.id == idEvent) flag = true;
     });
